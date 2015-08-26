@@ -13,15 +13,26 @@
 #define QSIZE 20 //realistically, this thing should never have more than 1 item at a time.
 
 /*typedef struct qnode {
-	//fifo
-} qnode_t;*/
+	qnode_t * next;
+	swevent_t data;
+} qnode_t;
 
+typedef struct queue {
+	qnode_t * head;
+	qnode_t * tail;
+} fifo_t;*/
 
 swevent_t fifo[QSIZE];
-//unsigned int head = 0, tail = 0;
 
-int queue(swevent_t * in);
-swevent_t dequeue();
+uint8_t head = 0, tail = 0;
+
+int hw8stuff(void);
+int enq(swevent_t * in);
+swevent_t deq();
+
+/*int fifo_init(fifo_t * fifo);
+int enq(fifo_t * fifo, swevent_t * event);
+swevent_t deq(fifo_t * que);*/
 
 
 

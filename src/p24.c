@@ -6,7 +6,7 @@
 #include "stm32f4xx_hal_gpio.h"	//!!wmh
 #include "p24.h"
 #include "globals.h"
-#include "fifo.h"
+//#include "fifo.h"
 
 //#include "misc.h"			//!!wmh
 

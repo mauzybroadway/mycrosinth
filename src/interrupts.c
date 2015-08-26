@@ -11,21 +11,13 @@
 #include "globals.h"
 
 void TIM3_IRQHandler(void) {
-	//ADD FLAG STUFF
+	// Clear flag
 	__HAL_TIM_CLEAR_IT(&TIM_Handle, TIM_IT_UPDATE);
 
-	/*static int ayy = 0;
-	if (ayy < 10) {			// Divide TIM3 by 10
-		ayy++;
-	} else {
-		ayy = 0;
-		hw8stuff();
-		asm_get_switch();
-	}*/
-
+	// Do stuff
 	asm_get_switch();
-	//hw8stuff();
 	asm_vdisplay();
+	hw8stuff();
 }
 
 

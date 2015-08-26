@@ -6,18 +6,21 @@
  */
 #include "fifo.h"
 
+swevent_t getswitch();
 
-int queue(swevent_t * in) {
-	if(in->sw <= 13) {
-		if(in->pr != 0) {
-			switch(in->sw) {
+int hw8stuff(void) {
+	swevent_t out = getswitch();
+
+	if(out.sw <= 13) {
+		if(out.pr != 0) {
+			switch(out.sw) {
 				case 1 : if (vdisplay[0] < 15) vdisplay[0]++; break;
 				case 3 : if (vdisplay[1] < 15) vdisplay[1]++; break;
 				case 5 : if (vdisplay[2] < 15) vdisplay[2]++; break;
 				case 7 : if (vdisplay[3] < 15) vdisplay[3]++; break;
 			}
 		} else {
-			switch(in->sw) {
+			switch(out.sw) {
 				case 2 : if (vdisplay[0] > 0) vdisplay[0]--; break;
 				case 4 : if (vdisplay[1] > 0) vdisplay[1]--; break;
 				case 6 : if (vdisplay[2] > 0) vdisplay[2]--; break;
@@ -29,8 +32,31 @@ int queue(swevent_t * in) {
 	return 0;
 }
 
+/*int fifo_init(fifo_t * fifo) {
+	fifo->head = NULL;
+	fifo->tail = NULL;
 
-/*int queue(swevent_t * in) {
+	return 0; //add some error checking here maybe
+}
+
+int enq (fifo_t fifo, swevent_t * event) {
+	qnode_t node;
+	node->next = NULL;
+	(node->data).pr = event->pr;
+	(node->data).sw = event->sw;
+	(node->data).msec = event->msec;
+
+	if (fifo->head == NULL) {
+		fifo->head =
+	}
+}
+
+swevent_t * deq (fifo_t fifo) {
+
+}*/
+
+
+int enq(swevent_t * in) {
 	if(tail < QSIZE){
 		//fifo[tail].pr = in->pr;
 		//fifo[tail].sw = in->sw;
@@ -42,7 +68,7 @@ int queue(swevent_t * in) {
 	}
 }
 
-swevent_t dequeue() {
+swevent_t deq() {
 	unsigned int tmp = head, i;
 
 	if(tail == 0) {
@@ -63,13 +89,13 @@ swevent_t dequeue() {
 	tail--;
 
 	return tmpsw;
-}*/
+}
 
-/*swevent_t getswitch(void)
+swevent_t getswitch(void)
 {
-	swevent_t out = dequeue();
+	swevent_t out = deq();
 	return out;
-}*/
+}
 
 /*void hw8stuff(void)
 {

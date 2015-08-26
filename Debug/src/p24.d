@@ -62,7 +62,7 @@ src/p24.o: ../src/p24.c ../system/include/cmsis/stm32f4xx.h \
  ../system/include/stm32f4-hal/stm32f4xx_ll_usb.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_pcd_ex.h \
  ../system/include/stm32f4-hal/stm32f4xx_hal_hcd.h ../include/p24.h \
- ../include/globals.h ../include/globals.h ../src/fifo.h
+ ../include/globals.h ../include/globals.h
 
 ../system/include/cmsis/stm32f4xx.h:
 
@@ -199,5 +199,3 @@ src/p24.o: ../src/p24.c ../system/include/cmsis/stm32f4xx.h \
 ../include/globals.h:
 
 ../include/globals.h:
-
-../src/fifo.h:

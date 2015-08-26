@@ -493,7 +493,7 @@ get_switch_save:
 	@;str r1, [r0, r2, lsl #2]
 	
 	push {lr}
-	bl queue
+	bl enq
 	pop {lr}
 	
 	b loop_cont

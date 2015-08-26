@@ -11,6 +11,9 @@
 //----- INCLUDES -----//
 #include "stm32f4xx.h"
 
+//----- DEFINES -----//
+#define NULL ((void *) 0)
+
 //----- TYPDEFS -----//
 typedef struct swevent {
 	unsigned int pr : 1 ;  //press-release bit: 1 -- switch was pressed; 0 -- switch was released
