@@ -25,6 +25,8 @@ int queue(swevent_t * in) {
 			}
 		}
 	}
+
+	return 0;
 }
 
 

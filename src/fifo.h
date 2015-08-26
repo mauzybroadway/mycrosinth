@@ -12,9 +12,9 @@
 
 #define QSIZE 20 //realistically, this thing should never have more than 1 item at a time.
 
-typedef struct qnode {
-
-} qnode_t;
+/*typedef struct qnode {
+	//fifo
+} qnode_t;*/
 
 
 swevent_t fifo[QSIZE];

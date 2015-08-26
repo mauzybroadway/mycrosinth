@@ -21,6 +21,7 @@ void init_all(void)
 	vdisplay_init();
 	TIM3_init();
 	GPIO_init();
+	P24_init();
 }
 
 void vdisplay_init(void) {

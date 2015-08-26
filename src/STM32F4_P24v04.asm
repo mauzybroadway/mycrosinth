@@ -228,8 +228,8 @@ asm_set_switch:
 
 	@;push {r0}
 
-	@;PORTBIT_write GPIOC_BASE,1,1			@;	01_PC1	CA_EN	-- disable cathode (active-low)
-	@;PORTBIT_write GPIOB_BASE,4,1			@;	01_PB4	AN_EN	-- disable anode   (active-low)
+	PORTBIT_write GPIOC_BASE,1,1			@;	01_PC1	CA_EN	-- disable cathode (active-low)
+	PORTBIT_write GPIOB_BASE,4,1			@;	01_PB4	AN_EN	-- disable anode   (active-low)
 
 	@;pop {r0}
 	tbh [pc,r0]
@@ -340,11 +340,10 @@ switch_D:
 	b sw_end
 	
 sw_end: 
-	PORTBIT_write GPIOC_BASE,1,0			@;	01_PC1	CA_EN	-- enable cathode (active-low)
+	@;PORTBIT_write GPIOC_BASE,1,0			@;	01_PC1	CA_EN	-- enable cathode (active-low)
 	@;PORTBIT_write GPIOB_BASE,4,0			@;	01_PB4	AN_EN	-- enable anode   (active-low)
 	@;bx lr
 	@;b cont
-
 	@;push {r0,r1,r2,r3,lr}
 	@;bl asm_vdisplay
 	@;pop {r0,r1,r2,r3,lr}
@@ -505,10 +504,6 @@ get_switch_save:
 asm_get_switch:
 	push {lr}
 	
-	PORTBIT_write GPIOC_BASE,1,1			@;	01_PC1	CA_EN	-- disable cathode (active-low)
-	PORTBIT_write GPIOB_BASE,4,1			@;	01_PB4	AN_EN	-- disable anode   (active-low)
-
-
 	@;ldrh r1,=asmticks
 	@;ldr r2,[r1]
 	@;add r2,r2,#1
