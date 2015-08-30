@@ -153,6 +153,7 @@ swevent_t dequeue();
 #include "globals.h"
 swevent_t getswitch(void);
 void hw8stuff(void);
+void synthstuff(void);
 
 //__value_in_regs extern swevent_t getswitch(void);
 

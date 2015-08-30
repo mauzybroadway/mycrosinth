@@ -10,6 +10,7 @@
 #include "diag/Trace.h"
 #include "stm32f4xx.h"
 
+
 // ----------------------------------------------------------------------------
 //
 // Standalone STM32F4 empty sample (trace via DEBUG).

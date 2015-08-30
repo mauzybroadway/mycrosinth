@@ -12,7 +12,7 @@
 #include "stm32f4xx.h"
 
 //----- DEFINES -----//
-#define NULL ((void *) 0)
+//#define NULL ((void *) 0)
 
 //----- TYPDEFS -----//
 typedef struct swevent {
@@ -24,5 +24,7 @@ typedef struct swevent {
 //----- VARIABLES -----//
 TIM_HandleTypeDef TIM_Handle;
 extern int vdisplay[11];
+uint16_t PINGBUF[128], PONGBUF[128];
+
 
 #endif /* INTERRUPTS_H_ */

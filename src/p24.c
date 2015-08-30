@@ -213,7 +213,7 @@ swevent_t dequeue() {
 		}
 	}
 }
-
+*/
 void synthstuff(void)
 {
 	swevent_t out = getswitch();
@@ -233,7 +233,7 @@ void synthstuff(void)
 			vdisplay[0] = 0;
 		}
 	}
-}*/
+}
 
 
     

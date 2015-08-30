@@ -13,9 +13,11 @@ C_SRCS += \
 ../src/p24.c 
 
 ASM_SRCS += \
+../src/DMA1Stream5int_svc.asm \
 ../src/STM32F4_P24v04.asm 
 
 OBJS += \
+./src/DMA1Stream5int_svc.o \
 ./src/STM32F4_P24v04.o \
 ./src/_initialize_hardware.o \
 ./src/_write.o \
@@ -35,6 +37,7 @@ C_DEPS += \
 ./src/p24.d 
 
 ASM_DEPS += \
+./src/DMA1Stream5int_svc.d \
 ./src/STM32F4_P24v04.d 
 
 

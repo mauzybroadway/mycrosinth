@@ -17,7 +17,14 @@ void TIM3_IRQHandler(void) {
 	// Do stuff
 	asm_get_switch();
 	asm_vdisplay();
-	hw8stuff();
+	//hw8stuff();
+	synthstuff();
+}
+
+void EXTI1_IRQHandler() {
+	vdisplay[0] ++;
+
+	while(1);
 }
 
 
