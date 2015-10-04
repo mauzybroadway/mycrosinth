@@ -53,23 +53,10 @@ P24_init:
 	PORTBIT_init 0,GPIOC_BASE,1
 	PORTBIT_init 0,GPIOB_BASE,4
 	
-	@; SWITCH OUT
+	@; SWITCH IN
 	PORTBIT_init 2,GPIOA_BASE,15
 	PORTBIT_init 2,GPIOC_BASE,8
-	
-	@; SWITCH IN
-	@;PORTBIT_init 1,GPIOA_BASE,1
-	@;PORTBIT_init 1,GPIOB_BASE,0
-	@;PORTBIT_init 1,GPIOB_BASE,1
-	@;PORTBIT_init 1,GPIOB_BASE,5
-	@;PORTBIT_init 1,GPIOB_BASE,11
-	@;PORTBIT_init 1,GPIOC_BASE,4
-	@;PORTBIT_init 1,GPIOC_BASE,5
-	@;PORTBIT_init 1,GPIOD_BASE,2
-	
-	@;PORTBIT_write GPIOC_BASE,8,1
-	@;PORTBIT_write GPIOA_BASE,15,1
-	
+
 	bx lr
 
 	.global asm_print_digit
@@ -222,8 +209,8 @@ prt_end:
 	bx lr
 	
 	
-	@;.global asm_set_switch
-	@;.thumb_func
+//	.global asm_set_switch
+//	.thumb_func
 asm_set_switch:
 
 	@;push {r0}
@@ -232,6 +219,8 @@ asm_set_switch:
 	PORTBIT_write GPIOB_BASE,4,1			@;	01_PB4	AN_EN	-- disable anode   (active-low)
 
 	@;pop {r0}
+	and r0,#0xF		@; limit r0 to table size
+
 	tbh [pc,r0]
 TBB_SWITCH_table:	@;table where offsets to code entry points are stored
 	.hword ((switch_1 - TBB_SWITCH_table)/2)
@@ -247,6 +236,8 @@ TBB_SWITCH_table:	@;table where offsets to code entry points are stored
 	.hword ((switch_B - TBB_SWITCH_table)/2)
 	.hword ((switch_C - TBB_SWITCH_table)/2)
 	.hword ((switch_D - TBB_SWITCH_table)/2)
+	.hword ((rot_enc_a - TBB_SWITCH_table)/2)
+	.hword ((rot_enc_b - TBB_SWITCH_table)/2)
 	
 	.thumb_func
 switch_1:
@@ -338,7 +329,39 @@ switch_D:
 	PORTBIT_write GPIOC_BASE,1,0			@;	01_PC1	CA_EN	-- enable cathode (active-low)
 	SWITCH_read GPIOA_BASE,1,GPIOA_BASE,15
 	b sw_end
+
+
+@; PC8  -> A
+@; PA15 -> B
+
+@; PB5/CA_D/ROT_ENC_COM
+
+@; Set cathode to 0xFF
+@; Set anode to ROT_ENC_COM
+@; Read channel A
+@; Read channel B
+
+.thumb_func
+rot_enc_a:
+	CATHODE_write 1,1,1,1,1,1,1,1
+	PORTBIT_write GPIOC_BASE,1,0			@;	01_PC1	CA_EN	-- enable cathode (active-low)
+	ANODE_write 0,1,1,1,1,1,1,1
+	PORTBIT_write GPIOB_BASE,4,0			@;	01_PB4	AN_EN	-- enable anode   (active-low)
+	SWITCH_read GPIOB_BASE,5,GPIOC_BASE,8
+	PORTBIT_write GPIOB_BASE,4,1			@;	01_PB4	AN_EN	-- disable anode   (active-low)
+	b sw_end
+
+.thumb_func
+rot_enc_b:
+	CATHODE_write 1,1,1,1,1,1,1,1
+	PORTBIT_write GPIOC_BASE,1,0			@;	01_PC1	CA_EN	-- enable cathode (active-low)
+	ANODE_write 0,1,1,1,1,1,1,1
+	PORTBIT_write GPIOB_BASE,4,0			@;	01_PB4	AN_EN	-- enable anode   (active-low)
+	SWITCH_read GPIOB_BASE,5,GPIOA_BASE,15
+	PORTBIT_write GPIOB_BASE,4,1			@;	01_PB4	AN_EN	-- disable anode   (active-low)
+	b sw_end
 	
+
 sw_end: 
 	@;PORTBIT_write GPIOC_BASE,1,0			@;	01_PC1	CA_EN	-- enable cathode (active-low)
 	@;PORTBIT_write GPIOB_BASE,4,0			@;	01_PB4	AN_EN	-- enable anode   (active-low)
@@ -465,32 +488,18 @@ get_switch_save:
 	movw r2,#0
 	orr r2,r2,r1
 	
+	cmp r0,#13			@; if it is a rotary value, save it in the array
+	bge save_rot_enc
+
 	pop {r0}
 	add r1,r0,#1	@; r0 is technically sw# - 1
 	push {r0}
+
 	lsl r1,r1,#1
 	orr r2,r2,r1
 	
-	@;push {r1}
 	ldr r0,=outarray
-	str r2, [r0]
-	
-	@;pop {r0}
-	@;add r1,r0,#1	@; r0 is technically sw# - 1
-	@;push {r0}
-	@;str r1, [r3, #4]@;r2, lsl #2]
-	
-	@;mov r2,#2
-	@;ldrh r1,=asmticks
-	@;ldr r0,[r1]
-	@;str r0, [r3, r2, lsl #2]
-
-	@;mov r0,r3	@; return outarray
-	
-	@;pop {r1}
-	@;ldr r0,=vdisplay
-	@;mov r2,#1
-	@;str r1, [r0, r2, lsl #2]
+	str r2,[r0]
 	
 	push {lr}
 	bl enq
@@ -498,22 +507,36 @@ get_switch_save:
 	
 	b loop_cont
 	
+save_rot_enc:
+	ldr r2,=rot_enc_arr
+
+	//mov r1,#2
+	cmp r0,#13
+	ite eq
+	streq r1,[r2,#0]
+	strne r1,[r2,#4]
+	b loop_cont
+
 	
 	.global asm_get_switch
 	.thumb_func
 asm_get_switch:
 	push {lr}
 	
-	@;ldrh r1,=asmticks
-	@;ldr r2,[r1]
-	@;add r2,r2,#1
-	@;str r2,[r1]
+	@; r0 - lower bound
+	@; r1 - upper bound
+	@; r2 -
+	@; r3 -
 	
-	movw r0, #0
+	@;movw r0, #0
+
+	and r0,#0xF		@; limit r0 to 15 (total number of inputs...)
+	mov r3,r1 		@; store the upper bound in r3
+
 	
 get_switch_loop:
-	push {r0}
-	b asm_set_switch  @; makes it dim
+	push {r0,r3}
+	b asm_set_switch
 cont:
 	@;DEBUG_cmp 0
 	mov r1,r0
@@ -521,10 +544,10 @@ cont:
 	push {r0}
 	b update_state
 loop_cont:
-	pop {r0}
+	pop {r0,r3}
 	add r0,r0,#1
-	cmp r0,#13
-	blt get_switch_loop
+	cmp r0,r3
+	ble get_switch_loop
 
 get_switch_end:
 	pop {lr}

@@ -6,6 +6,7 @@
 C_SRCS += \
 ../src/_initialize_hardware.c \
 ../src/_write.c \
+../src/codec.c \
 ../src/fifo.c \
 ../src/init.c \
 ../src/interrupts.c \
@@ -21,6 +22,7 @@ OBJS += \
 ./src/STM32F4_P24v04.o \
 ./src/_initialize_hardware.o \
 ./src/_write.o \
+./src/codec.o \
 ./src/fifo.o \
 ./src/init.o \
 ./src/interrupts.o \
@@ -30,6 +32,7 @@ OBJS += \
 C_DEPS += \
 ./src/_initialize_hardware.d \
 ./src/_write.d \
+./src/codec.d \
 ./src/fifo.d \
 ./src/init.d \
 ./src/interrupts.d \

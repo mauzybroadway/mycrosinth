@@ -501,7 +501,7 @@
 #define CCER_CCxE_MASK                   TIM_CCER_CCxE_MASK
 #define CCER_CCxNE_MASK                  TIM_CCER_CCxNE_MASK
   
-#define TIM_DMABase_CR1                  TIM_DMABASE_CR1
+/*#define TIM_DMABase_CR1                  TIM_DMABASE_CR1
 #define TIM_DMABase_CR2                  TIM_DMABASE_CR2
 #define TIM_DMABase_SMCR                 TIM_DMABASE_SMCR
 #define TIM_DMABase_DIER                 TIM_DMABASE_DIER
@@ -519,7 +519,7 @@
 #define TIM_DMABase_CCR3                 TIM_DMABASE_CCR3
 #define TIM_DMABase_CCR4                 TIM_DMABASE_CCR4
 #define TIM_DMABase_BDTR                 TIM_DMABASE_BDTR
-#define TIM_DMABase_DCR                  TIM_DMABASE_DCR
+#define TIM_DMABase_DCR                  TIM_DMABASE_DCR*/
 #define TIM_DMABase_DMAR                 TIM_DMABASE_DMAR
 #define TIM_DMABase_OR1                  TIM_DMABASE_OR1
 #define TIM_DMABase_CCMR3                TIM_DMABASE_CCMR3
@@ -527,7 +527,7 @@
 #define TIM_DMABase_CCR6                 TIM_DMABASE_CCR6
 #define TIM_DMABase_OR2                  TIM_DMABASE_OR2
 #define TIM_DMABase_OR3                  TIM_DMABASE_OR3
-#define TIM_DMABase_OR                   TIM_DMABASE_OR
+/*#define TIM_DMABase_OR                   TIM_DMABASE_OR
 
 #define TIM_EventSource_Update           TIM_EVENTSOURCE_UPDATE
 #define TIM_EventSource_CC1              TIM_EVENTSOURCE_CC1
@@ -536,10 +536,10 @@
 #define TIM_EventSource_CC4              TIM_EVENTSOURCE_CC4
 #define TIM_EventSource_COM              TIM_EVENTSOURCE_COM
 #define TIM_EventSource_Trigger          TIM_EVENTSOURCE_TRIGGER
-#define TIM_EventSource_Break            TIM_EVENTSOURCE_BREAK
+#define TIM_EventSource_Break            TIM_EVENTSOURCE_BREAK*/
 #define TIM_EventSource_Break2           TIM_EVENTSOURCE_BREAK2
 
-#define TIM_DMABurstLength_1Transfer     TIM_DMABURSTLENGTH_1TRANSFER
+/*#define TIM_DMABurstLength_1Transfer     TIM_DMABURSTLENGTH_1TRANSFER
 #define TIM_DMABurstLength_2Transfers    TIM_DMABURSTLENGTH_2TRANSFERS
 #define TIM_DMABurstLength_3Transfers    TIM_DMABURSTLENGTH_3TRANSFERS
 #define TIM_DMABurstLength_4Transfers    TIM_DMABURSTLENGTH_4TRANSFERS
@@ -556,7 +556,7 @@
 #define TIM_DMABurstLength_15Transfers   TIM_DMABURSTLENGTH_15TRANSFERS
 #define TIM_DMABurstLength_16Transfers   TIM_DMABURSTLENGTH_16TRANSFERS
 #define TIM_DMABurstLength_17Transfers   TIM_DMABURSTLENGTH_17TRANSFERS
-#define TIM_DMABurstLength_18Transfers   TIM_DMABURSTLENGTH_18TRANSFERS
+#define TIM_DMABurstLength_18Transfers   TIM_DMABURSTLENGTH_18TRANSFERS*/
 
 /**
   * @}
@@ -983,7 +983,7 @@
 #define __HAL_DHR12R1_ALIGNEMENT                        DAC_DHR12R1_ALIGNMENT
 #define __HAL_DHR12R2_ALIGNEMENT                        DAC_DHR12R2_ALIGNMENT
 #define __HAL_DHR12RD_ALIGNEMENT                        DAC_DHR12RD_ALIGNMENT
-#define IS_DAC_GENERATE_WAVE                            IS_DAC_WAVE
+//#define IS_DAC_GENERATE_WAVE                            IS_DAC_WAVE
 
 /**
   * @}
@@ -1084,10 +1084,10 @@
   * @{
   */
 
-#define IS_DAC_WAVE(WAVE) (((WAVE) == DAC_WAVE_NONE) || \
+/*#define IS_DAC_WAVE(WAVE) (((WAVE) == DAC_WAVE_NONE) || \
                           ((WAVE) == DAC_WAVE_NOISE)|| \
                           ((WAVE) == DAC_WAVE_TRIANGLE))
-  
+  */
 /**
   * @}
   */
@@ -1927,7 +1927,7 @@
 #define __RCC_PLLSRC           RCC_GET_PLL_OSCSOURCE
 
 #define IS_RCC_MSIRANGE        IS_RCC_MSI_CLOCK_RANGE
-#define IS_RCC_RTCCLK_SOURCE   IS_RCC_RTCCLKSOURCE
+//#define IS_RCC_RTCCLK_SOURCE   IS_RCC_RTCCLKSOURCE
 #define IS_RCC_SYSCLK_DIV      IS_RCC_HCLK
 #define IS_RCC_HCLK_DIV        IS_RCC_PCLK
 
@@ -1935,39 +1935,39 @@
 #define RCC_MCO_NODIV          RCC_MCODIV_1
 #define RCC_RTCCLKSOURCE_NONE  RCC_RTCCLKSOURCE_NO_CLK
 
-#define HSION_BitNumber        RCC_HSION_BIT_NUMBER
-#define CSSON_BitNumber        RCC_CSSON_BIT_NUMBER
-#define PLLON_BitNumber        RCC_PLLON_BIT_NUMBER
-#define PLLI2SON_BitNumber     RCC_PLLI2SON_BIT_NUMBER
-#define I2SSRC_BitNumber       RCC_I2SSRC_BIT_NUMBER
-#define RTCEN_BitNumber        RCC_RTCEN_BIT_NUMBER
-#define BDRST_BitNumber        RCC_BDRST_BIT_NUMBER
-#define LSION_BitNumber        RCC_LSION_BIT_NUMBER
-#define PLLSAION_BitNumber     RCC_PLLSAION_BIT_NUMBER
-#define TIMPRE_BitNumber       RCC_TIMPRE_BIT_NUMBER
+//#define HSION_BitNumber        RCC_HSION_BIT_NUMBER
+//#define CSSON_BitNumber        RCC_CSSON_BIT_NUMBER
+//#define PLLON_BitNumber        RCC_PLLON_BIT_NUMBER
+//#define PLLI2SON_BitNumber     RCC_PLLI2SON_BIT_NUMBER
+//#define I2SSRC_BitNumber       RCC_I2SSRC_BIT_NUMBER
+//#define RTCEN_BitNumber        RCC_RTCEN_BIT_NUMBER
+//#define BDRST_BitNumber        RCC_BDRST_BIT_NUMBER
+//#define LSION_BitNumber        RCC_LSION_BIT_NUMBER
+//#define PLLSAION_BitNumber     RCC_PLLSAION_BIT_NUMBER
+//#define TIMPRE_BitNumber       RCC_TIMPRE_BIT_NUMBER
 
 #define CR_BYTE2_ADDRESS       RCC_CR_BYTE2_ADDRESS
 #define CIR_BYTE1_ADDRESS      RCC_CIR_BYTE1_ADDRESS
-#define CIR_BYTE2_ADDRESS      RCC_CIR_BYTE2_ADDRESS
+//#define CIR_BYTE2_ADDRESS      RCC_CIR_BYTE2_ADDRESS
 #define BDCR_BYTE0_ADDRESS     RCC_BDCR_BYTE0_ADDRESS
 #define DBP_TIMEOUT_VALUE      RCC_DBP_TIMEOUT_VALUE
 #define LSE_TIMEOUT_VALUE      RCC_LSE_TIMEOUT_VALUE
 
-#define CR_HSION_BB            RCC_CR_HSION_BB
-#define CR_CSSON_BB            RCC_CR_CSSON_BB
-#define CR_PLLON_BB            RCC_CR_PLLON_BB
-#define CR_PLLI2SON_BB         RCC_CR_PLLI2SON_BB
+//#define CR_HSION_BB            RCC_CR_HSION_BB
+//#define CR_CSSON_BB            RCC_CR_CSSON_BB
+//#define CR_PLLON_BB            RCC_CR_PLLON_BB
+//#define CR_PLLI2SON_BB         RCC_CR_PLLI2SON_BB
 #define CR_MSION_BB            RCC_CR_MSION_BB
-#define CSR_LSION_BB           RCC_CSR_LSION_BB
+//#define CSR_LSION_BB           RCC_CSR_LSION_BB
 #define CSR_LSEON_BB           RCC_CSR_LSEON_BB
 #define CSR_LSEBYP_BB          RCC_CSR_LSEBYP_BB
 #define CSR_RTCEN_BB           RCC_CSR_RTCEN_BB
 #define CSR_RTCRST_BB          RCC_CSR_RTCRST_BB
-#define CFGR_I2SSRC_BB         RCC_CFGR_I2SSRC_BB
-#define BDCR_RTCEN_BB          RCC_BDCR_RTCEN_BB
-#define BDCR_BDRST_BB          RCC_BDCR_BDRST_BB
-#define CR_PLLSAION_BB         RCC_CR_PLLSAION_BB
-#define DCKCFGR_TIMPRE_BB      RCC_DCKCFGR_TIMPRE_BB
+//#define CFGR_I2SSRC_BB         RCC_CFGR_I2SSRC_BB
+//#define BDCR_RTCEN_BB          RCC_BDCR_RTCEN_BB
+//#define BDCR_BDRST_BB          RCC_BDCR_BDRST_BB
+//#define CR_PLLSAION_BB         RCC_CR_PLLSAION_BB
+//#define DCKCFGR_TIMPRE_BB      RCC_DCKCFGR_TIMPRE_BB
 
 /**
   * @}
@@ -2212,10 +2212,10 @@
 #define __HAL_TIM_SetCompare            __HAL_TIM_SET_COMPARE
 #define __HAL_TIM_GetCompare            __HAL_TIM_GET_COMPARE
 
-#define TIM_TS_ITR0                        ((uint32_t)0x0000)
+/*#define TIM_TS_ITR0                        ((uint32_t)0x0000)
 #define TIM_TS_ITR1                        ((uint32_t)0x0010)
 #define TIM_TS_ITR2                        ((uint32_t)0x0020)
-#define TIM_TS_ITR3                        ((uint32_t)0x0030)
+#define TIM_TS_ITR3                        ((uint32_t)0x0030)*/
 #define IS_TIM_INTERNAL_TRIGGER_SELECTION(SELECTION) (((SELECTION) == TIM_TS_ITR0) || \
                                                       ((SELECTION) == TIM_TS_ITR1) || \
                                                       ((SELECTION) == TIM_TS_ITR2) || \
@@ -2229,14 +2229,16 @@
 #define TIM_OUTPUTNSTATE_DISABLE            ((uint32_t)0x0000)
 #define TIM_OUTPUTNSTATE_ENABLE             (TIM_CCER_CC1NE)
 
-#define IS_TIM_OUTPUTN_STATE(STATE) (((STATE) == TIM_OUTPUTNSTATE_DISABLE) || \
+/*#define IS_TIM_OUTPUTN_STATE(STATE) (((STATE) == TIM_OUTPUTNSTATE_DISABLE) || \
                                      ((STATE) == TIM_OUTPUTNSTATE_ENABLE))
+*/
 
 #define TIM_OUTPUTSTATE_DISABLE            ((uint32_t)0x0000)
 #define TIM_OUTPUTSTATE_ENABLE             (TIM_CCER_CC1E)
 
-#define IS_TIM_OUTPUT_STATE(STATE) (((STATE) == TIM_OUTPUTSTATE_DISABLE) || \
+/*#define IS_TIM_OUTPUT_STATE(STATE) (((STATE) == TIM_OUTPUTSTATE_DISABLE) || \
                                     ((STATE) == TIM_OUTPUTSTATE_ENABLE))  
+*/
 /**
   * @}
   */

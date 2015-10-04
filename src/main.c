@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "diag/Trace.h"
 #include "stm32f4xx.h"
+#include "init.h"
 
 
 // ----------------------------------------------------------------------------
@@ -37,6 +38,7 @@ int main(int argc, char* argv[])
 	// At this stage the system clock should have already been configured
 	// at high speed.
 
+	//uint32_t test;
 	// Initialize user stuff
 	init_all();
 
@@ -44,7 +46,7 @@ int main(int argc, char* argv[])
 
 	while (1)
 	{
-		//trace_printf("Ayyyyyyy\n");
+		//asm_vdisplay();
 
 	}
 

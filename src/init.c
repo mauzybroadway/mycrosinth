@@ -7,15 +7,21 @@
 
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_tim.h"
+//#include "stm32f4xx_hal_dac.h"
+//#include "stm32f4xx_hal_tim.h"
+#include "spl/stm32f4xx_rcc.h"
+#include "spl/stm32f4xx_dac.h"
+#include "spl/stm32f4xx_dma.h"
+#include "spl/stm32f4xx_tim.h"
+#include "codec.h"
 #include "globals.h"
 #include "init.h"
 
-#define   OUT_FREQ          5000                                 // Output waveform frequency
+#define   OUT_FREQ          1000                                 // Output waveform frequency
 #define   SINE_RES          128                                  // Waveform resolution
 #define   DAC_DHR12R1_ADDR  0x40007408                           // DMA writes into this reg on every request
 #define   CNT_FREQ          42000000                             // TIM6 counter clock (prescaled APB1)
-#define   TIM_PERIOD        ((CNT_FREQ)/((SINE_RES)*(OUT_FREQ))) // Autoreload reg value
+#define   TIM_PERIOD        ((2*CNT_FREQ)/((SINE_RES)*(OUT_FREQ))) // Autoreload reg value
 
 const uint16_t function[SINE_RES] = { 2048, 2145, 2242, 2339, 2435, 2530, 2624, 2717, 2808, 2897,
                                       2984, 3069, 3151, 3230, 3307, 3381, 3451, 3518, 3581, 3640,
@@ -34,21 +40,22 @@ const uint16_t function[SINE_RES] = { 2048, 2145, 2242, 2339, 2435, 2530, 2624, 
 // private function descriptions
 void vdisplay_init();
 void TIM3_init(void);
+void TIM4_init(void);
 void TIM6_init(void);
 void GPIO_init(void);
-void DAC_init(void);
-void DMA_init(void);
-void EXTI_init(void);
+void DAC_DMA_init(void);
 
 void init_all(void)
 {
-	vdisplay_init();
-	TIM3_init();
 	GPIO_init();
+	DAC_DMA_init();
 	P24_init();
-	DAC_init();
-	DMA_init();
-	TIM6_init();
+	vdisplay_init();
+	codec_init();
+	codec_ctrl_init();
+	TIM6_init();			/* Initialize timer */
+	TIM3_init();			/* interrupts last... */
+	TIM4_init();
 }
 
 void vdisplay_init(void) {
@@ -63,137 +70,132 @@ void vdisplay_init(void) {
 	vdisplay[8] = 0;
 	vdisplay[9] = 0;
 	vdisplay[10]= 0;
+	asm_vdisplay();
 }
 
-void DMA_init() {
+void TIM3_init() {
+	TIM_TimeBaseInitTypeDef TIM3_TimeBase;
+	NVIC_InitTypeDef NVIC_InitStructure;
 
-
-}
-
-void DAC_init(void) {
-		DMA_HandleTypeDef dma_handle;
-
-	// Enable the DMA clock
-	__HAL_RCC_DMA1_CLK_ENABLE();
-
-	// Configure the DMA
-	dma_handle.Instance	= DMA1_Stream5;						// Initialize DMA for DAC1
-	dma_handle.Init.Channel = DMA_CHANNEL_7;				// ...
-
-	dma_handle.Init.Direction = DMA_MEMORY_TO_PERIPH;		// will be moving data in memory TO the DAC
-	dma_handle.Init.PeriphInc = DMA_PINC_DISABLE;			// periph shall not be incremented
-	dma_handle.Init.MemInc = DMA_MINC_ENABLE;				// memory shall be incremented
-	dma_handle.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-	dma_handle.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-	dma_handle.Init.Mode = DMA_CIRCULAR;
-	dma_handle.Init.Priority = DMA_PRIORITY_HIGH;
-	dma_handle.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-	dma_handle.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
-	dma_handle.Init.MemBurst = DMA_MBURST_SINGLE;
-	dma_handle.Init.PeriphBurst = DMA_PBURST_SINGLE;
-
-	HAL_DMA_Init(&dma_handle);
-	HAL_DMA_Start(&dma_handle, (uint32_t)&function, DAC_DHR12R1_DACC1DHR, SINE_RES);
-	//HAL_DMAEx_MultiBufferStart_IT(&dma_handle, (uint32_t)&PINGBUF, DAC_DHR12R1_DACC1DHR, (uint32_t)&PONGBUF, (uint32_t)128);
-
-	//HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
-	//HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-
-
-
-	DAC_HandleTypeDef dac_handle;
-	DAC_ChannelConfTypeDef dac_conf;
-
-	// Enable the DAC clock
-	__HAL_RCC_DAC_CLK_ENABLE();
-
-	// Configure the DAC
-	dac_handle.Instance = DAC;
-	dac_handle.DMA_Handle1 = &dma_handle;
-
-	dac_conf.DAC_Trigger = DAC_TRIGGER_T6_TRGO;
-	dac_conf.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
-	HAL_DAC_Init(&dac_handle);
-
-	HAL_DAC_ConfigChannel(&dac_handle, &dac_conf, DAC_CHANNEL_1);
-	HAL_DAC_Start(&dac_handle, DAC_CHANNEL_1);
-	HAL_DAC_Start_DMA(&dac_handle, DAC_CHANNEL_1, (uint32_t *)function, SINE_RES,DAC_ALIGN_12B_R);
-
-}
-
-void TIM3_init(void) {
-	//TIM_HandleTypeDef TIM_Handle;
-
+	//RCC_AHB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
 	__TIM3_CLK_ENABLE();
 
-	// Configure TIM3
-	TIM_Handle.Instance = TIM3;
-	TIM_Handle.Init.Prescaler = 1 - 1;
-	TIM_Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	TIM_Handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	TIM_Handle.Init.Period = 65535;
+	TIM_TimeBaseStructInit(&TIM3_TimeBase);
+	TIM3_TimeBase.TIM_Period = 65535;
+	TIM3_TimeBase.TIM_Prescaler = 0;
+	TIM3_TimeBase.TIM_ClockDivision = 0;
+	TIM3_TimeBase.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM3, &TIM3_TimeBase);
 
-	// Initialize the timer
-	HAL_TIM_Base_Init(&TIM_Handle);
-	HAL_TIM_Base_Start_IT(&TIM_Handle);
+	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 
-	// Enable the interrupt
-	HAL_NVIC_SetPriority(TIM3_IRQn, 1, 1);
-	HAL_NVIC_EnableIRQ(TIM3_IRQn);
+	TIM_Cmd(TIM3, ENABLE);
+
+	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	//HAL_NVIC_SetPriority(TIM3_IRQn, 1, 1);
+	//HAL_NVIC_EnableIRQ(TIM3_IRQn);
 }
 
-void TIM6_init(void) {
-	TIM_HandleTypeDef TIM6_Handle;
+void TIM4_init() {
+	TIM_TimeBaseInitTypeDef TIM3_TimeBase;
+	NVIC_InitTypeDef NVIC_InitStructure;
 
+	//RCC_AHB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
+	__TIM4_CLK_ENABLE();
+
+	TIM_TimeBaseStructInit(&TIM3_TimeBase);
+	TIM3_TimeBase.TIM_Period = 65535;
+	TIM3_TimeBase.TIM_Prescaler = 2;
+	TIM3_TimeBase.TIM_ClockDivision = 0;
+	TIM3_TimeBase.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM4, &TIM3_TimeBase);
+
+	TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
+
+	TIM_Cmd(TIM4, ENABLE);
+
+	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	//HAL_NVIC_SetPriority(TIM3_IRQn, 1, 1);
+	//HAL_NVIC_EnableIRQ(TIM3_IRQn);
+}
+
+
+void TIM6_init(void){
+	TIM_TimeBaseInitTypeDef TIM6_TimeBase;
+
+	//RCC_AHB1PeriphClockCmd(RCC_APB1Periph_TIM6,ENABLE);
 	__TIM6_CLK_ENABLE();
 
-	// Configure TIM3
-	TIM6_Handle.Instance = TIM6;
-	TIM6_Handle.Init.Prescaler = 1 - 1;
-	TIM6_Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	TIM6_Handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	TIM6_Handle.Init.Period = (uint16_t)TIM_PERIOD;
+	TIM_TimeBaseStructInit(&TIM6_TimeBase);
+	TIM6_TimeBase.TIM_Period = (uint16_t)TIM_PERIOD;
+	TIM6_TimeBase.TIM_Prescaler = 0;
+	TIM6_TimeBase.TIM_ClockDivision = 0;
+	TIM6_TimeBase.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM6, &TIM6_TimeBase);
+	TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
 
-	// Initialize the timer
-	HAL_TIM_Base_Init(&TIM6_Handle);
-
-	// Set Master mode
-	TIM_MasterConfigTypeDef tim6master;
-	tim6master.MasterOutputTrigger = TIM_TRGO_UPDATE;
-	tim6master.MasterSlaveMode = TIM_MASTERSLAVEMODE_ENABLE;
-
-	HAL_TIMEx_MasterConfigSynchronization(&TIM6_Handle, &tim6master);
-
-	HAL_TIM_Base_Start(&TIM6_Handle);
-
-	// Enable the interrupt
-	//HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 1, 1);
-	//HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
+	TIM_Cmd(TIM6, ENABLE);
 }
 
-void GPIO_init(void) {
-	// Init clock for LED's and switches
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-	__HAL_RCC_GPIOD_CLK_ENABLE();
-
-	// Rotary encoder
-	__HAL_RCC_GPIOG_CLK_ENABLE();
-
-	GPIO_TypeDef g2_td;
-	GPIO_InitTypeDef g2_init;
-
-	g2_init.Pin = GPIO_PIN_2;
-	g2_init.Mode = GPIO_MODE_IT_RISING_FALLING;
-	g2_init.Speed = GPIO_SPEED_MEDIUM;
-	g2_init.Pull = GPIO_PULLUP;
-
-	HAL_GPIO_Init(&g2_td, &g2_init);
-
-	HAL_NVIC_SetPriority(EXTI1_IRQn, 1, 2);
-	HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-
-
+void GPIO_init(void){
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD,ENABLE);
 }
 
+void DAC_DMA_init(void){
+	GPIO_InitTypeDef GPIO_InitStruct;
+	DAC_InitTypeDef DAC_INIT;
+	DMA_InitTypeDef DMA_INIT;
+
+	__HAL_RCC_DMA1_CLK_ENABLE();
+	__HAL_RCC_DAC_CLK_ENABLE();
+
+	/* DAC output pin */
+	GPIO_InitStruct.Pin = GPIO_PIN_4;
+	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	//GPIO_InitStruct.Speed = GPIO_SPEED_FAST;	/* 50MHz */
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+
+	DAC_INIT.DAC_Trigger = DAC_Trigger_T6_TRGO;
+	DAC_INIT.DAC_WaveGeneration = DAC_WaveGeneration_None;
+	DAC_INIT.DAC_LFSRUnmask_TriangleAmplitude = DAC_LFSRUnmask_Bit0;
+	DAC_INIT.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+	DAC_Init(DAC_Channel_1, &DAC_INIT);
+
+	DMA_DeInit(DMA1_Stream5);
+	DMA_INIT.DMA_Channel				= DMA_Channel_7;
+	DMA_INIT.DMA_PeripheralBaseAddr		= (uint32_t)DAC_DHR12R1_ADDR;
+	DMA_INIT.DMA_Memory0BaseAddr		= (uint32_t) &function;
+	DMA_INIT.DMA_DIR					= DMA_DIR_MemoryToPeripheral;
+	DMA_INIT.DMA_BufferSize				= SINE_RES;
+	DMA_INIT.DMA_PeripheralInc			= DMA_PeripheralInc_Disable;
+	DMA_INIT.DMA_MemoryInc				= DMA_MemoryInc_Enable;
+	DMA_INIT.DMA_PeripheralDataSize		= DMA_PeripheralDataSize_HalfWord;
+	DMA_INIT.DMA_MemoryDataSize			= DMA_MemoryDataSize_HalfWord;
+	DMA_INIT.DMA_Mode					= DMA_Mode_Circular;
+	DMA_INIT.DMA_Priority				= DMA_Priority_High;
+	DMA_INIT.DMA_FIFOMode				= DMA_FIFOMode_Disable;
+	DMA_INIT.DMA_FIFOThreshold			= DMA_FIFOThreshold_HalfFull;
+	DMA_INIT.DMA_MemoryBurst			= DMA_MemoryBurst_Single;
+	DMA_INIT.DMA_PeripheralBurst		= DMA_PeripheralBurst_Single;
+
+	DMA_Init(DMA1_Stream5, &DMA_INIT);
+
+	DMA_Cmd(DMA1_Stream5, ENABLE);
+	DAC_Cmd(DAC_Channel_1, ENABLE);
+	DAC_DMACmd(DAC_Channel_1,ENABLE);
+}

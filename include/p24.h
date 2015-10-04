@@ -38,6 +38,8 @@ typedef enum
 #define USE_STM324xG_EVAL
 #endif
 
+#define ENCODER_MAX 					 15
+
 #define ANCAn                            12
 #define U_CAn                            10
 
@@ -130,6 +132,7 @@ typedef enum
 
 void ANCA_INIT_All();
 void ANCAInit(ANCA_TypeDef Anca);
+void rot_enc(void);
 //void ANCA_Set (int ANCA[8]);
 //void ANCA_Print_Num (int num, int digit, int dot);
 //void ANCA_Print_Ascii (char c, int digit);

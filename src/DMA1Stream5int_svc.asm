@@ -1,5 +1,3 @@
-@; DMA1Stream5int_svc.asm wmh 2015-05-16 : demo DMA interrupt service
-
 @; --- characterize target syntax, processor
 	.syntax unified				@; ARM Unified Assembler Language (UAL). 
 	.thumb						@; Use thumb instructions only

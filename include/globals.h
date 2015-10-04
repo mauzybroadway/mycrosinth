@@ -5,8 +5,8 @@
  *      Author: mauzy
  */
 
-#ifndef INTERRUPTS_H_
-#define INTERRUPTS_H_
+#ifndef GLOBALS_H_
+#define GLOBALS_H_
 
 //----- INCLUDES -----//
 #include "stm32f4xx.h"
@@ -22,9 +22,11 @@ typedef struct swevent {
 } swevent_t;
 
 //----- VARIABLES -----//
-TIM_HandleTypeDef TIM_Handle;
-extern int vdisplay[11];
+//TIM_HandleTypeDef TIM_Handle;
+
+extern unsigned int vdisplay[11];
+extern unsigned int rot_enc_arr[2];
 uint16_t PINGBUF[128], PONGBUF[128];
 
 
-#endif /* INTERRUPTS_H_ */
+#endif /* GLOBALS_H_ */

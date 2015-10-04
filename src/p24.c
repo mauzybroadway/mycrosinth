@@ -17,8 +17,8 @@
 
 
 //extern int vdisplay[11] = {0,0,0,0,0,0,0,0,0,0,0};
-int vdisplay[11] = {0};
-extern int note[2] = {0,5};
+unsigned int vdisplay[11] = {0};
+unsigned int rot_enc_arr[2] = {0};
 
 GPIO_TypeDef* ANCA_PORT[ANCAn] = {CA_A_GPIO_PORT, CA_B_GPIO_PORT,
                                  CA_C_GPIO_PORT, CA_D_GPIO_PORT, CA_E_GPIO_PORT,
@@ -218,21 +218,92 @@ void synthstuff(void)
 {
 	swevent_t out = getswitch();
 	
+	//int a = 0, b = 0;
+
 	if(out.sw <= 13) {
 		if(out.pr != 0) {	// pressed
 			//switch(out.sw) {
 			//	case 1 : note[0] = 1;
 			//}
-			note[0] = out.sw;
 			vdisplay[0] = out.sw;
 		} else {					// released
 			//switch(out.sw) {
 			//	case 2 : note[0] = 0;
 			//}
-			note[0] = 0;
 			vdisplay[0] = 0;
 		}
+	} else if(out.sw <= 15) {
+		///vdisplay[1] = out.sw;
 	}
+
+	/*else if(out.sw == 14) {
+		if(out.pr) {
+			if(a != out.pr && out.pr > b)
+				vdisplay[1] = 1;
+		}
+		a = out.pr;
+	} else if(out.sw == 15) {
+		if(out.pr) {
+			if(b != out.pr && out.pr > a)
+				vdisplay[1] = 2;
+		}
+		b = out.pr;
+	}
+
+	vdisplay[2] = a;
+	vdisplay[3] = b;*/
+}
+
+#define OO	0
+#define OX	1
+#define XO	2
+#define XX	3
+
+void rot_enc(void) {
+	int a,b;
+	//static unsigned int state = 0;
+	static unsigned int count = 0;
+	static unsigned int iflag = 0, dflag = 0, prev = 0;
+
+	asm_get_switch(13,14);
+	a = rot_enc_arr[0];
+	b = rot_enc_arr[1];
+
+	if (a == 0 && b == 0) {
+		iflag = dflag = 0;
+		prev = OO;
+	} else if (a < b) {
+		if(prev == OO)
+			dflag = 1;
+		else if(dflag == 0 || prev != OX)
+			dflag = 0;
+
+		prev = OX;
+	} else if (a > b) {
+		if(prev == OO)
+			iflag = 1;
+		else if(iflag == 0 || prev != XO)
+			iflag = 0;
+
+		prev = XO;
+	} else {
+		if (iflag) {
+			if(count < ENCODER_MAX) count++;
+		}else if(dflag){
+			if(count > 0)
+				count--;
+		}
+
+		iflag = dflag = 0;
+		prev = XX;
+	}
+
+
+	//vdisplay[1] = rot_enc_arr[0];
+	//vdisplay[2] = rot_enc_arr[1];
+	vdisplay[3] = count;
+
+
 }
 
 
