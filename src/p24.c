@@ -19,6 +19,7 @@
 //extern int vdisplay[11] = {0,0,0,0,0,0,0,0,0,0,0};
 unsigned int vdisplay[11] = {0};
 unsigned int rot_enc_arr[2] = {0};
+unsigned int note[10];
 
 GPIO_TypeDef* ANCA_PORT[ANCAn] = {CA_A_GPIO_PORT, CA_B_GPIO_PORT,
                                  CA_C_GPIO_PORT, CA_D_GPIO_PORT, CA_E_GPIO_PORT,
@@ -226,11 +227,13 @@ void synthstuff(void)
 			//	case 1 : note[0] = 1;
 			//}
 			vdisplay[0] = out.sw;
+			note[0] = out.sw;
 		} else {					// released
 			//switch(out.sw) {
 			//	case 2 : note[0] = 0;
 			//}
 			vdisplay[0] = 0;
+			note[0] = 0;
 		}
 	} else if(out.sw <= 15) {
 		///vdisplay[1] = out.sw;

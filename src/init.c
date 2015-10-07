@@ -17,7 +17,7 @@
 #include "globals.h"
 #include "init.h"
 
-#define   OUT_FREQ          1000                                 // Output waveform frequency
+#define   OUT_FREQ          500                                 // Output waveform frequency
 #define   SINE_RES          128                                  // Waveform resolution
 #define   DAC_DHR12R1_ADDR  0x40007408                           // DMA writes into this reg on every request
 #define   CNT_FREQ          42000000                             // TIM6 counter clock (prescaled APB1)
@@ -155,6 +155,7 @@ void GPIO_init(void){
 }
 
 void DAC_DMA_init(void){
+	NVIC_InitTypeDef NVIC_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStruct;
 	DAC_InitTypeDef DAC_INIT;
 	DMA_InitTypeDef DMA_INIT;
@@ -179,7 +180,8 @@ void DAC_DMA_init(void){
 	DMA_DeInit(DMA1_Stream5);
 	DMA_INIT.DMA_Channel				= DMA_Channel_7;
 	DMA_INIT.DMA_PeripheralBaseAddr		= (uint32_t)DAC_DHR12R1_ADDR;
-	DMA_INIT.DMA_Memory0BaseAddr		= (uint32_t) &function;
+	DMA_INIT.DMA_Memory0BaseAddr		= (uint32_t) &PINGBUF;
+	//DMA_INIT.DMA_Memory0BaseAddr		= (uint32_t) &function;
 	DMA_INIT.DMA_DIR					= DMA_DIR_MemoryToPeripheral;
 	DMA_INIT.DMA_BufferSize				= SINE_RES;
 	DMA_INIT.DMA_PeripheralInc			= DMA_PeripheralInc_Disable;
@@ -195,7 +197,19 @@ void DAC_DMA_init(void){
 
 	DMA_Init(DMA1_Stream5, &DMA_INIT);
 
+	DMA_DoubleBufferModeConfig(DMA1_Stream5, &PONGBUF,DMA_Memory_0);
+	DMA_DoubleBufferModeCmd(DMA1_Stream5, ENABLE);
+
+	DMA_ITConfig(DMA1_Stream5, DMA_IT_HT | DMA_IT_TC | DMA_IT_TE, ENABLE);
+
 	DMA_Cmd(DMA1_Stream5, ENABLE);
+
 	DAC_Cmd(DAC_Channel_1, ENABLE);
 	DAC_DMACmd(DAC_Channel_1,ENABLE);
+
+	NVIC_InitStructure.NVIC_IRQChannel = DMA1_Stream5_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }

@@ -28,5 +28,6 @@ extern unsigned int vdisplay[11];
 extern unsigned int rot_enc_arr[2];
 uint16_t PINGBUF[128], PONGBUF[128];
 
+extern unsigned int note[10];
 
 #endif /* GLOBALS_H_ */
